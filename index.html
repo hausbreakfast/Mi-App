@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HAU'S Breakfast & Brunch</title>
+  
+  <!-- Tailwind CSS para Estilos -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React y React DOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel para convertir React/JSX en el navegador -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Ocultar barra de desplazamiento para las categorías */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-neutral-950">
+
+  <!-- Contenedor donde se dibuja la aplicación de React -->
+  <div id="root"></div>
+
+  <!-- Código React -->
+  <script type="text/babel">
+    const { useState } = React;
+
+    // --- OPCIONES Y MODIFICADORES REUTILIZABLES ---
+    const SALSAS_DISPONIBLES = [
+      { nombre: 'Mayocilantro', precio: 0 },
+      { nombre: 'Mayoketchup', precio: 0 },
+      { nombre: 'BBQ Guayaba', precio: 0 },
+      { nombre: 'Ranch', precio: 0 },
+      { nombre: 'Honey Mustard', precio: 0 },
+      { nombre: 'BBQ', precio: 0 }
+    ];
+
+    const LECHES_DISPONIBLES = [
+      { nombre: 'Leche Regular', precio: 0 },
+      { nombre: 'Leche de Almendra', precio: 1.00 },
+      { nombre: 'Leche de Avena', precio: 1.00 }
+    ];
+
+    const CARNES_SELECCION = [
+      { nombre: 'Jamón', precio: 0 },
+      { nombre: 'Pavo', precio: 0 },
+      { nombre: 'Bacon', precio: 0 },
+      { nombre: 'Pastrami', precio: 0 },
+      { nombre: 'Pollo', precio: 0 },
+      { nombre: 'Salami', precio: 0 }
+    ];
+
+    // --- CATEGORÍAS Y DATOS COMPLETOS DEL MENÚ ---
+    const CATEGORIAS = [
+      'Especialidades',
+      'Super Desayunos',
+      'Omelettes',
+      'Clásicos',
+      'Burgers',
+      'Sandwiches & Bocadillos',
+      'Pancakes & Waffles',
+      'Waffles Rellenos',
+      'Cereales Calientes',
+      'Menú de Niños',
+      'Bebidas Frías',
+      'Bebidas Calientes',
+      'Limonadas',
+      'Frappés',
+      'Acompañantes'
+    ];
+
+    const MENU_DATA = [
+      {
+        id: 101,
+        nombre: 'Smash Breakfast Burger',
+        descripcion: 'Carne de res, queso americano, huevo frito, tocineta, hashbrown y salsa de su selección.',
+        precio: 8.00,
+        categoria: 'Especialidades',
+        imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Selección de Salsa', tipo: 'radio', items: SALSAS_DISPONIBLES }]
+      },
+      {
+        id: 102,
+        nombre: 'Mallorca Breakfast Burger',
+        descripcion: 'Pan de Mallorca, azúcar glass, carne de res, huevo frito, lechuga, tomate, tocineta y salsa de su selección.',
+        precio: 8.00,
+        categoria: 'Especialidades',
+        imagen: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Selección de Salsa', tipo: 'radio', items: SALSAS_DISPONIBLES }]
+      },
+      {
+        id: 103,
+        nombre: 'Chicken Waffles',
+        descripcion: '2 strips de pollo, lechuga, tomate, queso suizo y salsa de su selección.',
+        precio: 9.50,
+        categoria: 'Especialidades',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Selección de Salsa', tipo: 'radio', items: SALSAS_DISPONIBLES }]
+      },
+      {
+        id: 201,
+        nombre: 'Super Desayuno Americano',
+        descripcion: 'Huevos revueltos con queso americano, bacon, jamón, hashbrown y 3 tostadas.',
+        precio: 10.00,
+        categoria: 'Super Desayunos',
+        imagen: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 202,
+        nombre: 'Super Desayuno Suizo',
+        descripcion: 'Huevos revueltos con jamón de pavo, cebollas, pimientos y tomate, queso suizo, hashbrown, 3 tostadas y frutas disponibles.',
+        precio: 11.00,
+        categoria: 'Super Desayunos',
+        imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 203,
+        nombre: 'Super Desayuno Mexicano',
+        descripcion: 'Huevos revueltos con jamón, cebollas y pimientos, queso rallado, 3 tostadas con guacamole, tocineta y hashbrown.',
+        precio: 12.00,
+        categoria: 'Super Desayunos',
+        imagen: 'https://images.unsplash.com/photo-1513442542250-854d436a73f2?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 204,
+        nombre: 'Super Desayuno Francés',
+        descripcion: 'Huevos revueltos con cebollas y pimientos, tostadas francesas con frutas disponibles, granola, whipped cream, bacon y hashbrown.',
+        precio: 13.00,
+        categoria: 'Super Desayunos',
+        imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 205,
+        nombre: 'Hau\'s Breakfast',
+        descripcion: '3 pancakes, frutas mixtas, Nutella o glaseado de la casa, azúcar glass, 2 huevos revueltos o fritos, tocineta o jamón y hashbrown.',
+        precio: 15.00,
+        categoria: 'Super Desayunos',
+        imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Preparación de Huevos', tipo: 'radio', items: [{ nombre: 'Revueltos', precio: 0 }, { nombre: 'Fritos', precio: 0 }] },
+          { nombre: 'Carne', tipo: 'radio', items: [{ nombre: 'Tocineta', precio: 0 }, { nombre: 'Jamón', precio: 0 }] },
+          { nombre: 'Cubierta Pancakes', tipo: 'radio', items: [{ nombre: 'Nutella', precio: 0 }, { nombre: 'Glaseado de la Casa', precio: 0 }] }
+        ]
+      },
+      {
+        id: 301,
+        nombre: 'Omelette de Pastrami',
+        descripcion: 'Salteado con cebollas y pimientos, queso suizo y tostadas con mantequilla o papas salteadas.',
+        precio: 10.00,
+        categoria: 'Omelettes',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Tostadas con Mantequilla', precio: 0 }, { nombre: 'Papas Salteadas', precio: 0 }] }]
+      },
+      {
+        id: 302,
+        nombre: 'Omelette de Pavo',
+        descripcion: 'Salteado con cebollas y pimientos, queso suizo y tostadas con mantequilla o papas salteadas.',
+        precio: 8.00,
+        categoria: 'Omelettes',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Tostadas con Mantequilla', precio: 0 }, { nombre: 'Papas Salteadas', precio: 0 }] }]
+      },
+      {
+        id: 303,
+        nombre: 'Omelette de Jamón',
+        descripcion: 'Salteado con cebollas y pimientos, queso americano y tostadas con mantequilla o papas salteadas.',
+        precio: 7.00,
+        categoria: 'Omelettes',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Tostadas con Mantequilla', precio: 0 }, { nombre: 'Papas Salteadas', precio: 0 }] }]
+      },
+      {
+        id: 304,
+        nombre: 'Omelette de Bacon',
+        descripcion: 'Salteado con cebollas y pimientos, queso suizo y tostadas con mantequilla o papas salteadas.',
+        precio: 8.00,
+        categoria: 'Omelettes',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Tostadas con Mantequilla', precio: 0 }, { nombre: 'Papas Salteadas', precio: 0 }] }]
+      },
+      {
+        id: 305,
+        nombre: 'Mega Omelette',
+        descripcion: '3 carnes de su selección salteadas con cebollas y pimientos, queso suizo, tostadas con mantequilla o papas salteadas.',
+        precio: 15.00,
+        categoria: 'Omelettes',
+        imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Selecciona Carnes (Hasta 3)', tipo: 'checkbox', items: CARNES_SELECCION },
+          { nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Tostadas con Mantequilla', precio: 0 }, { nombre: 'Papas Salteadas', precio: 0 }] }
+        ]
+      },
+      {
+        id: 401,
+        nombre: 'Tostadas Francesas',
+        descripcion: '2 tostadas en pan de mallorca con frutas mixtas, granola, azúcar glass y whipped cream.',
+        precio: 8.00,
+        categoria: 'Clásicos',
+        imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 402,
+        nombre: 'Huevos Revueltos',
+        descripcion: 'Huevos revueltos con cebolla, pimientos y tostadas con mantequilla. Escoge la proteína.',
+        precio: 6.00,
+        categoria: 'Clásicos',
+        imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Con Jamón', precio: 0 }, { nombre: 'Con Pavo', precio: 1.00 }] }]
+      },
+      {
+        id: 403,
+        nombre: 'Huevos Fritos',
+        descripcion: '2 huevos over easy, escoge proteína y tostadas con mantequilla.',
+        precio: 5.00,
+        categoria: 'Clásicos',
+        imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Jamón', precio: 0 }, { nombre: 'Pavo', precio: 0 }, { nombre: 'Bacon', precio: 0 }] }]
+      },
+      {
+        id: 404,
+        nombre: 'Burrito Desayuno',
+        descripcion: 'Huevos revueltos, cebolla, pimiento, proteína a escoger y sour cream o mayonesa.',
+        precio: 7.00,
+        categoria: 'Clásicos',
+        imagen: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Jamón', precio: 0 }, { nombre: 'Pavo', precio: 0 }, { nombre: 'Tocineta', precio: 0 }] },
+          { nombre: 'Salsa', tipo: 'radio', items: [{ nombre: 'Sour Cream', precio: 0 }, { nombre: 'Mayonesa', precio: 0 }] }
+        ]
+      },
+      {
+        id: 405,
+        nombre: 'Pancakes Tacos',
+        descripcion: '2 pancakes rellenos de frutas mixtas, Nutella o glaseado de la casa, azúcar glass y whipped cream.',
+        precio: 8.00,
+        categoria: 'Clásicos',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 501,
+        nombre: 'El Sencillo Burger',
+        descripcion: 'Queso americano, ketchup y salsa de preferencia. Incluye papas y bebida.',
+        precio: 7.50,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Modificadores', tipo: 'checkbox', items: [{ nombre: 'Envuelto en Lechuga', precio: 0 }, { nombre: 'Carne Adicional', precio: 2.00 }] },
+          { nombre: 'Acompañante', tipo: 'radio', items: [{ nombre: 'Papas Fritas', precio: 0 }, { nombre: 'Ensalada Verde', precio: 0 }, { nombre: 'Batatas Fritas', precio: 1.00 }] },
+          { nombre: 'Salsa', tipo: 'radio', items: SALSAS_DISPONIBLES },
+          { nombre: 'Bebida', tipo: 'radio', items: [{ nombre: 'Coca Cola', precio: 0 }, { nombre: 'Sprite', precio: 0 }, { nombre: 'Fanta China', precio: 0 }, { nombre: 'Sunkist Uva', precio: 0 }, { nombre: 'Kola Champagne', precio: 0 }, { nombre: 'Sprite Zero', precio: 0 }, { nombre: 'Coca Cola Zero', precio: 0 }, { nombre: 'Agua', precio: 0 }, { nombre: 'Malta', precio: 1.00 }] }
+        ]
+      },
+      {
+        id: 502,
+        nombre: 'El Clásico Burger',
+        descripcion: 'Queso americano, lechuga, tomate, pepinillos, ketchup y salsa de preferencia.',
+        precio: 9.00,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Modificadores', tipo: 'checkbox', items: [{ nombre: 'Envuelto en Lechuga', precio: 0 }, { nombre: 'Carne Adicional', precio: 2.00 }] },
+          { nombre: 'Salsa', tipo: 'radio', items: SALSAS_DISPONIBLES }
+        ]
+      },
+      {
+        id: 503,
+        nombre: 'Pizza Burger',
+        descripcion: 'Queso, pepperoni, bacon y salsa marinara. Incluye combo.',
+        precio: 10.50,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 504,
+        nombre: 'Bacon Burger',
+        descripcion: 'Queso americano, bacon, lechuga, tomate, ketchup y salsa. Incluye combo.',
+        precio: 10.50,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 505,
+        nombre: 'Caramel Onion Burger',
+        descripcion: 'Queso americano, cebollas caramelizadas, bacon, lechuga, tomate, ketchup y salsa.',
+        precio: 11.00,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 506,
+        nombre: 'Grill Chicken Burger',
+        descripcion: 'Pechuga de pollo, queso americano, lechuga, tomate, ketchup y salsa.',
+        precio: 10.50,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 507,
+        nombre: 'El Boricua Burger',
+        descripcion: 'Queso americano, amarillos, queso crema, bacon, lechuga, tomate, ketchup y salsa.',
+        precio: 12.00,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 508,
+        nombre: 'Doble Bacon Burger',
+        descripcion: 'Queso americano, bacon, cebollas caramelizadas, ketchup y salsa.',
+        precio: 12.00,
+        categoria: 'Burgers',
+        imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 601,
+        nombre: 'Sandwich Jamón y Queso',
+        descripcion: 'Pan tostado con jamón y queso.',
+        precio: 3.75,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 602,
+        nombre: 'Sandwich Jamón, Queso y Ensalada',
+        descripcion: 'Con lechuga y tomate.',
+        precio: 4.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 603,
+        nombre: 'Sandwich Jamón, Queso y Huevo',
+        descripcion: 'Clásico de desayuno en pan criollo.',
+        precio: 4.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 604,
+        nombre: 'Sandwich Jamón, Queso, Huevo y Ensalada',
+        descripcion: 'Completo con vegetación fresca.',
+        precio: 5.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 605,
+        nombre: 'Sandwich Bacon, Queso y Huevo',
+        descripcion: 'Servido con tocineta crujiente.',
+        precio: 4.75,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 606,
+        nombre: 'Sandwich de Pavo',
+        descripcion: 'Pavo magro y queso.',
+        precio: 7.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 607,
+        nombre: 'Sandwich de Pastrami',
+        descripcion: 'Pastrami salteado. Seleccione tamaño.',
+        precio: 7.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño de Porción', tipo: 'radio', items: [{ nombre: '3 oz', precio: 0 }, { nombre: '6 oz', precio: 2.50 }] }]
+      },
+      {
+        id: 608,
+        nombre: 'Sandwich de Salami',
+        descripcion: 'Salami salteado.',
+        precio: 6.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 609,
+        nombre: 'Sandwich de Atún',
+        descripcion: 'Mezcla de atún de la casa.',
+        precio: 6.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 610,
+        nombre: 'Sandwich de Pollo',
+        descripcion: 'Pechuga de pollo jugosa. Seleccione tamaño.',
+        precio: 7.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño de Porción', tipo: 'radio', items: [{ nombre: '4 oz', precio: 0 }, { nombre: '8 oz', precio: 2.50 }] }]
+      },
+      {
+        id: 611,
+        nombre: 'Sandwich de Pernil',
+        descripcion: 'Pernil desmenuzado. Seleccione tamaño.',
+        precio: 9.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño de Porción', tipo: 'radio', items: [{ nombre: '4 oz', precio: 0 }, { nombre: '8 oz', precio: 2.00 }] }]
+      },
+      {
+        id: 612,
+        nombre: 'Sandwich de Beefsteak',
+        descripcion: 'Carne de res salteada con cebollas. Seleccione tamaño.',
+        precio: 8.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Tamaño de Porción', tipo: 'radio', items: [{ nombre: '3 oz', precio: 0 }, { nombre: '6 oz', precio: 2.50 }] },
+          { nombre: 'Adicionales', tipo: 'checkbox', items: [{ nombre: 'Añadir Amarillos', precio: 2.00 }] }
+        ]
+      },
+      {
+        id: 613,
+        nombre: 'Dupleta Sandwich',
+        descripcion: 'Combinación de dos carnes de la casa.',
+        precio: 9.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 614,
+        nombre: 'Tripleta Sandwich',
+        descripcion: 'Combinación de tres carnes de la casa.',
+        precio: 12.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1553909489-cd47e0907980?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 651,
+        nombre: 'Bocadillo Jamón y Queso',
+        descripcion: 'Pan pequeño de bocadillo.',
+        precio: 2.75,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 652,
+        nombre: 'Bocadillo Jamón, Queso y Ensalada',
+        descripcion: 'Con lechuga y tomate.',
+        precio: 3.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 653,
+        nombre: 'Bocadillo Jamón, Queso y Huevo',
+        descripcion: 'Ideal para niños o snack.',
+        precio: 3.50,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 654,
+        nombre: 'Bocadillo Jamón, Queso, Huevo y Ensalada',
+        descripcion: 'Bocadillo surtido completo.',
+        precio: 4.00,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 655,
+        nombre: 'Bocadillo Bacon, Huevo y Queso',
+        descripcion: 'Bocadillo con tocineta.',
+        precio: 3.75,
+        categoria: 'Sandwiches & Bocadillos',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 701,
+        nombre: 'Pancake Nutella',
+        descripcion: 'Fresas, Nutella, whipped cream y una galleta.',
+        precio: 7.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 702,
+        nombre: 'Pancake Nutella Biscuit',
+        descripcion: 'Glaseado de la casa, Nutella, Oreo, trozos de cheesecake y whipped cream.',
+        precio: 8.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 703,
+        nombre: 'Pancake de Frutas',
+        descripcion: 'Frutas disponibles, azúcar en polvo, whipped cream y syrup, Nutella o glaseado.',
+        precio: 7.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 704,
+        nombre: 'Pancake Oreo Cheesecake',
+        descripcion: 'Oreo, galleta, trozos de cheesecake, whipped cream y glaseado.',
+        precio: 8.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 705,
+        nombre: 'Pancake Kinder Bueno',
+        descripcion: 'Crema de avellana y avellana blanca, whipped cream y trozos de Kinder Bueno.',
+        precio: 8.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 706,
+        nombre: 'Pancake Guava Cheesecake',
+        descripcion: 'Glaseado de la casa, guayaba, galleta graham, trozos de cheesecake y whipped cream.',
+        precio: 9.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 707,
+        nombre: 'Pancake Strawberry Cheesecake',
+        descripcion: 'Glaseado de fresa, glaseado de la casa, fresas, trozos de cheesecake, graham y whipped cream.',
+        precio: 9.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 708,
+        nombre: 'Pancake de Pistacho',
+        descripcion: 'Crema de pistacho, trozos de pistacho, frutas, whipped cream y azúcar en polvo.',
+        precio: 10.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 709,
+        nombre: 'Pancake Dubai',
+        descripcion: 'Crema de pistacho, crema de avellana, kataifi tostado y fresas.',
+        precio: 12.00,
+        categoria: 'Pancakes & Waffles',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 751,
+        nombre: 'Waffle Jamón, Queso y Huevo',
+        descripcion: '4 lascas de jamón, queso americano y 2 huevos fritos, decorado con queso rallado, perejil y azúcar en polvo.',
+        precio: 7.00,
+        categoria: 'Waffles Rellenos',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 752,
+        nombre: 'Waffle Revoltillo',
+        descripcion: 'Huevos revueltos, jamón o bacon, cebollas, pimientos y queso americano, decorado con queso rallado, perejil y azúcar.',
+        precio: 8.00,
+        categoria: 'Waffles Rellenos',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Jamón', precio: 0 }, { nombre: 'Bacon', precio: 0 }] }]
+      },
+      {
+        id: 753,
+        nombre: 'Waffle Pastrami',
+        descripcion: 'Pastrami salteado con cebollas, pimiento y queso suizo, decorado con queso rallado y perejil.',
+        precio: 9.00,
+        categoria: 'Waffles Rellenos',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 754,
+        nombre: 'Waffle Pollo, Bacon y Queso',
+        descripcion: '3 tiras de pollo empanado, bacon y queso cheddar, decorado con perejil y azúcar en polvo.',
+        precio: 10.00,
+        categoria: 'Waffles Rellenos',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 755,
+        nombre: 'Waffle Pernil y Jamón',
+        descripcion: '4 oz de pernil desmenuzado, 4 lascas de jamón, queso suizo y pepinillos.',
+        precio: 11.00,
+        categoria: 'Waffles Rellenos',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 801,
+        nombre: 'Avena',
+        descripcion: 'Preparada al momento con la leche de su preferencia.',
+        precio: 3.00,
+        categoria: 'Cereales Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Tipo de Leche', tipo: 'radio', items: LECHES_DISPONIBLES },
+          { nombre: 'Toppings Extra', tipo: 'checkbox', items: [{ nombre: 'Añadir Frutas y Granola', precio: 1.00 }] }
+        ]
+      },
+      {
+        id: 802,
+        nombre: 'Harina de Maíz',
+        descripcion: 'Preparada al momento con la leche de su preferencia.',
+        precio: 3.00,
+        categoria: 'Cereales Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517673400267-0251440c45dc?w=500&auto=format&fit=crop&q=60',
+        opciones: [
+          { nombre: 'Tipo de Leche', tipo: 'radio', items: LECHES_DISPONIBLES },
+          { nombre: 'Toppings Extra', tipo: 'checkbox', items: [{ nombre: 'Añadir Frutas y Granola', precio: 1.00 }] }
+        ]
+      },
+      {
+        id: 901,
+        nombre: 'Jr Pancakes',
+        descripcion: '3 pancakes pequeños con oreo, Nutella o syrup.',
+        precio: 4.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 902,
+        nombre: 'Revueltos Niños',
+        descripcion: '2 huevos, jamón, queso americano y dos tostadas.',
+        precio: 5.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 903,
+        nombre: 'Tostadas Francesas Niños',
+        descripcion: 'Una rebanada de pan, 1 fruta, azúcar en polvo y syrup.',
+        precio: 5.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 904,
+        nombre: 'Quesadillas Niños',
+        descripcion: 'Solo queso rallado.',
+        precio: 5.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1618040996337-56904b7850b9?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 905,
+        nombre: 'Tostadas con Nutella',
+        descripcion: 'Pan criollo tostado relleno con Nutella.',
+        precio: 3.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 906,
+        nombre: 'Chicken Strips Niños',
+        descripcion: '3 strips de pollo empanado con papas fritas.',
+        precio: 7.00,
+        categoria: 'Menú de Niños',
+        imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1001,
+        nombre: 'Jugo de China',
+        descripcion: 'Fresco y refrescante.',
+        precio: 3.00,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '12 oz', precio: 0 }, { nombre: '16 oz', precio: 1.00 }] }]
+      },
+      {
+        id: 1002,
+        nombre: 'Jugo de Manzana',
+        descripcion: 'Jugo natural de manzana.',
+        precio: 2.50,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '12 oz', precio: 0 }, { nombre: '16 oz', precio: 1.00 }] }]
+      },
+      {
+        id: 1003,
+        nombre: 'Jugo de Parcha',
+        descripcion: 'Sabor tropical.',
+        precio: 2.50,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '12 oz', precio: 0 }, { nombre: '16 oz', precio: 1.00 }] }]
+      },
+      {
+        id: 1004,
+        nombre: 'Iced Coffee',
+        descripcion: 'Café frío expreso con leche.',
+        precio: 4.50,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '12 oz', precio: 0 }, { nombre: '16 oz', precio: 1.00 }] }]
+      },
+      {
+        id: 1005,
+        nombre: 'Raspberry Iced Tea',
+        descripcion: 'Té frío de frambuesa.',
+        precio: 2.00,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '12 oz', precio: 0 }, { nombre: '16 oz', precio: 1.00 }] }]
+      },
+      {
+        id: 1006,
+        nombre: 'Malta India',
+        descripcion: 'Botella fría.',
+        precio: 2.00,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1007,
+        nombre: 'Agua Embotellada',
+        descripcion: 'Agua purificada.',
+        precio: 1.00,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1560023907-5f339617ea30?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1008,
+        nombre: 'Refrescos Variados',
+        descripcion: 'Lata de soda fría.',
+        precio: 1.00,
+        categoria: 'Bebidas Frías',
+        imagen: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1101,
+        nombre: 'Café Americano',
+        descripcion: 'Café colado artesanal.',
+        precio: 2.50,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1102,
+        nombre: 'Café Latte',
+        descripcion: 'Espresso con leche cremada.',
+        precio: 2.50,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1103,
+        nombre: 'Capuccino',
+        descripcion: 'Espresso con espuma de leche.',
+        precio: 3.00,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1104,
+        nombre: 'Mocha',
+        descripcion: 'Espresso, chocolate y leche cremada.',
+        precio: 3.00,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1105,
+        nombre: 'Chai Latte',
+        descripcion: 'Té Chai especiado con leche.',
+        precio: 3.00,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1106,
+        nombre: 'Matcha',
+        descripcion: 'Té verde Matcha orgánico con leche.',
+        precio: 3.50,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1107,
+        nombre: 'Dirty Chai',
+        descripcion: 'Chai Latte con shot de espresso.',
+        precio: 3.00,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1108,
+        nombre: 'Dirty Matcha',
+        descripcion: 'Matcha con shot de espresso.',
+        precio: 3.50,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 0.50 }] }]
+      },
+      {
+        id: 1109,
+        nombre: 'Chocolate Caliente',
+        descripcion: 'Rico chocolate caliente.',
+        precio: 3.00,
+        categoria: 'Bebidas Calientes',
+        imagen: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '8 oz', precio: 0 }, { nombre: '12 oz', precio: 3.00 }] }]
+      },
+      {
+        id: 1201,
+        nombre: 'Limonada Original',
+        descripcion: 'Limonada recién exprimida.',
+        precio: 3.00,
+        categoria: 'Limonadas',
+        imagen: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '16 oz', precio: 0 }, { nombre: '32 oz', precio: 3.00 }] }]
+      },
+      {
+        id: 1202,
+        nombre: 'Limonada de Sabores',
+        descripcion: 'Infusionada con sabores de la casa.',
+        precio: 4.00,
+        categoria: 'Limonadas',
+        imagen: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Tamaño', tipo: 'radio', items: [{ nombre: '16 oz', precio: 0 }, { nombre: '32 oz', precio: 3.00 }] }]
+      },
+      {
+        id: 1301,
+        nombre: 'Frappé Nutella',
+        descripcion: 'Bebida helada de Nutella.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Sustitución de Leche', tipo: 'radio', items: LECHES_DISPONIBLES }]
+      },
+      {
+        id: 1302,
+        nombre: 'Frappé Kinder Bueno',
+        descripcion: 'Con trozos de Kinder Bueno.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Sustitución de Leche', tipo: 'radio', items: LECHES_DISPONIBLES }]
+      },
+      {
+        id: 1303,
+        nombre: 'Frappé Tronki',
+        descripcion: 'Sabor especial Tronki.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1304,
+        nombre: 'Frappé Oreo',
+        descripcion: 'Con galletas Oreo trituradas.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1305,
+        nombre: 'Frappé Cheesecake',
+        descripcion: 'Cremoso con toque de cheesecake.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1306,
+        nombre: 'Frappé Oreo Cheesecake',
+        descripcion: 'Combinación perfecta de Oreo y Cheesecake.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1307,
+        nombre: 'Frappé Nutella Cheesecake',
+        descripcion: 'Nutella cremosa con cheesecake.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1308,
+        nombre: 'Frappé Strawberry Cheesecake',
+        descripcion: 'Fresa dulce con base de cheesecake.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1309,
+        nombre: 'Frappé Biscoff',
+        descripcion: 'Con galleta Biscoff Lotus.',
+        precio: 6.00,
+        categoria: 'Frappés',
+        imagen: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1401,
+        nombre: 'Tostadas con Mantequilla',
+        descripcion: 'Pan criollo tostado.',
+        precio: 2.00,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1402,
+        nombre: 'Tostadas con Queso',
+        descripcion: 'Tostadas con queso derretido.',
+        precio: 2.50,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1403,
+        nombre: 'Tostadas con Guacamole',
+        descripcion: 'Pan tostado con guacamole fresco.',
+        precio: 3.00,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1404,
+        nombre: 'Hashbrowns (2)',
+        descripcion: '2 crujientes de papa.',
+        precio: 2.00,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1405,
+        nombre: 'Papas Fritas',
+        descripcion: 'Porción individual.',
+        precio: 1.50,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&auto=format&fit=crop&q=60',
+        opciones: [{ nombre: 'Extras', tipo: 'checkbox', items: [{ nombre: 'Añadir Queso y Bacon', precio: 2.00 }] }]
+      },
+      {
+        id: 1406,
+        nombre: 'Papas Salteadas',
+        descripcion: 'Papas sazonadas y salteadas.',
+        precio: 2.00,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=500&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 1407,
+        nombre: 'Pancakes Solos (2)',
+        descripcion: '2 pancakes tradicionales.',
+        precio: 4.00,
+        categoria: 'Acompañantes',
+        imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
+      }
+    ];
+
+    // --- COMPONENTE PRINCIPAL ---
+    function MenuApp() {
+      const [categoriaActiva, setCategoriaActiva] = useState('Especialidades');
+      const [carrito, setCarrito] = useState([]);
+      const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+      const [opcionesElegidas, setOpcionesElegidas] = useState({});
+
+      const productosFiltrados = MENU_DATA.filter(p => p.categoria === categoriaActiva);
+
+      const abrirModal = (producto) => {
+        setProductoSeleccionado(producto);
+        setOpcionesElegidas({});
+      };
+
+      const cerrarModal = () => {
+        setProductoSeleccionado(null);
+        setOpcionesElegidas({});
+      };
+
+      const seleccionarOpcionRadio = (grupo, item) => {
+        setOpcionesElegidas({ ...opcionesElegidas, [grupo]: item });
+      };
+
+      const toggleOpcionCheckbox = (grupo, item) => {
+        const seleccionados = opcionesElegidas[grupo] || [];
+        const existe = seleccionados.some(i => i.nombre === item.nombre);
+        const nuevos = existe 
+          ? seleccionados.filter(i => i.nombre !== item.nombre)
+          : [...seleccionados, item];
+        
+        setOpcionesElegidas({ ...opcionesElegidas, [grupo]: nuevos });
+      };
+
+      const calcularPrecioProductoModal = () => {
+        if (!productoSeleccionado) return 0;
+        let extra = 0;
+        Object.values(opcionesElegidas).forEach(val => {
+          if (Array.isArray(val)) {
+            val.forEach(i => extra += i.precio);
+          } else if (val && val.precio) {
+            extra += val.precio;
+          }
+        });
+        return productoSeleccionado.precio + extra;
+      };
+
+      const agregarAlCarritoDesdeModal = () => {
+        const itemFinal = {
+          ...productoSeleccionado,
+          precioCalculado: calcularPrecioProductoModal(),
+          opcionesDetalle: opcionesElegidas,
+          cartId: Date.now()
+        };
+        setCarrito([...carrito, itemFinal]);
+        cerrarModal();
+      };
+
+      const totalArticulos = carrito.length;
+      const totalPrecio = carrito.reduce((sum, item) => sum + (item.precioCalculado || item.precio), 0).toFixed(2);
+
+      return (
+        <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-24">
+          <header className="sticky top-0 z-10 bg-neutral-900/90 backdrop-blur-md border-b border-neutral-800 px-4 py-4 flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl font-black tracking-wider text-amber-500">HAU'S</h1>
+              <p className="text-xs text-neutral-400">Breakfast & Brunch • Tel. 939-256-5036</p>
+            </div>
+            <div className="bg-neutral-800 px-3 py-1 rounded-full text-xs font-medium text-emerald-400 border border-emerald-500/20">
+              ● Ordena y Recoge
+            </div>
+          </header>
+
+          <nav className="sticky top-[69px] z-10 bg-neutral-950/90 backdrop-blur-md px-4 py-3 border-b border-neutral-800 flex gap-2 overflow-x-auto no-scrollbar">
+            {CATEGORIAS.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategoriaActiva(cat)}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
+                  categoriaActiva === cat
+                    ? 'bg-amber-500 text-neutral-950 shadow-lg shadow-amber-500/20'
+                    : 'bg-neutral-900 text-neutral-400 hover:text-neutral-200'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </nav>
+
+          <main className="px-4 py-6 max-w-md mx-auto space-y-4">
+            {productosFiltrados.length === 0 ? (
+              <p className="text-center text-neutral-500 text-sm py-8">No hay productos disponibles en esta categoría.</p>
+            ) : (
+              productosFiltrados.map((item) => (
+                <div 
+                  key={item.id}
+                  onClick={() => abrirModal(item)}
+                  className="bg-neutral-900 border border-neutral-800/80 rounded-2xl p-3 flex gap-3 shadow-sm hover:border-neutral-700 transition-all cursor-pointer"
+                >
+                  <img 
+                    src={item.imagen} 
+                    alt={item.nombre} 
+                    className="w-24 h-24 object-cover rounded-xl flex-shrink-0 bg-neutral-800"
+                  />
+                  <div className="flex flex-col justify-between flex-grow">
+                    <div>
+                      <h3 className="font-bold text-neutral-100 leading-tight">{item.nombre}</h3>
+                      <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{item.descripcion}</p>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="font-extrabold text-amber-500">${item.precio.toFixed(2)}</span>
+                      <button className="bg-neutral-800 hover:bg-neutral-700 text-amber-500 font-bold px-3 py-1 rounded-lg transition-colors text-sm">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </main>
+
+          {productoSeleccionado && (
+            <div className="fixed inset-0 z-30 bg-black/70 backdrop-blur-sm flex justify-center items-end sm:items-center p-0 sm:p-4">
+              <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[85vh] overflow-y-auto">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-amber-500">{productoSeleccionado.nombre}</h2>
+                    <p className="text-xs text-neutral-400 mt-0.5">{productoSeleccionado.descripcion}</p>
+                  </div>
+                  <button onClick={cerrarModal} className="text-neutral-400 hover:text-white font-bold text-lg px-2">✕</button>
+                </div>
+
+                {productoSeleccionado.opciones?.map((grupo, idx) => (
+                  <div key={idx} className="mb-5 border-t border-neutral-800 pt-3">
+                    <h4 className="text-sm font-semibold text-neutral-200 mb-2">{grupo.nombre}</h4>
+                    <div className="space-y-2">
+                      {grupo.items.map((opt, oIdx) => {
+                        const isRadio = grupo.tipo === 'radio';
+                        const isSelected = isRadio 
+                          ? opcionesElegidas[grupo.nombre]?.nombre === opt.nombre
+                          : (opcionesElegidas[grupo.nombre] || []).some(i => i.nombre === opt.nombre);
+
+                        return (
+                          <div 
+                            key={oIdx}
+                            onClick={() => isRadio ? seleccionarOpcionRadio(grupo.nombre, opt) : toggleOpcionCheckbox(grupo.nombre, opt)}
+                            className={`flex justify-between items-center p-3 rounded-xl border text-sm cursor-pointer transition-all ${
+                              isSelected ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'bg-neutral-800/50 border-neutral-800 text-neutral-300'
+                            }`}
+                          >
+                            <span>{opt.nombre}</span>
+                            <span className="text-xs font-semibold">
+                              {opt.precio > 0 ? `+$${opt.precio.toFixed(2)}` : 'Incluido'}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+
+                <button 
+                  onClick={agregarAlCarritoDesdeModal}
+                  className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center"
+                >
+                  <span>Agregar al Pedido</span>
+                  <span>${calcularPrecioProductoModal().toFixed(2)}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {totalArticulos > 0 && (
+            <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-20">
+              <button className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center transition-all">
+                <div className="flex items-center gap-2">
+                  <span className="bg-neutral-950 text-amber-500 text-xs px-2 py-0.5 rounded-full">
+                    {totalArticulos}
+                  </span>
+                  <span>Ver mi Orden</span>
+                </div>
+                <span>${totalPrecio}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<MenuApp />);
+  </script>
+</body>
+</html>
