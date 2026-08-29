@@ -4,6 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HAU'S Breakfast & Brunch</title>
+
+  <!-- Enlace al Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f59e0b">
+
+<!-- Registro del Service Worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
   
   <!-- Tailwind CSS para Estilos -->
   <script src="https://cdn.tailwindcss.com"></script>
