@@ -1245,6 +1245,11 @@ function MenuApp() {
   const [carrito, setCarrito] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [opcionesElegidas, setOpcionesElegidas] = useState({});
+  const [verCarrito, setVerCarrito] = useState(false);
+  const [nombreCliente, setNombreCliente] = useState('');
+  const [telefonoCliente, setTelefonoCliente] = useState('');
+  const [metodoPago, setMetodoPago] = useState('ath'); // 'ath' o 'card'
+  const [procesandoPago, setProcesandoPago] = useState(false);
 
   const productosFiltrados = MENU_DATA.filter(p => p.categoria === categoriaActiva);
 
@@ -1323,15 +1328,52 @@ function MenuApp() {
     const itemFinal = {
       ...productoSeleccionado,
       precioCalculado: calcularPrecioProductoModal(),
-      opcionesDetalle: opcionesElegidas,
-      cartId: Date.now()
+      opcionesDetalle: { ...opcionesElegidas },
+      cartId: Date.now(),
+      cantidad: 1
     };
     setCarrito([...carrito, itemFinal]);
     cerrarModal();
   };
 
-  const totalArticulos = carrito.length;
-  const totalPrecio = carrito.reduce((sum, item) => sum + (item.precioCalculado || item.precio), 0).toFixed(2);
+  const modificarCantidadItem = (cartId, delta) => {
+    setCarrito(prev => prev.map(item => {
+      if (item.cartId === cartId) {
+        const nuevaCantidad = item.cantidad + delta;
+        return nuevaCantidad > 0 ? { ...item, cantidad: nuevaCantidad } : null;
+      }
+      return item;
+    }).filter(Boolean));
+  };
+
+  const eliminarItemCarrito = (cartId) => {
+    setCarrito(prev => prev.filter(item => item.cartId !== cartId));
+  };
+
+  const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+  const subtotal = carrito.reduce((sum, item) => sum + (item.precioCalculado * item.cantidad), 0);
+  const ivu = subtotal * 0.115; // IVU Puerto Rico (11.5%)
+  const totalPrecio = (subtotal + ivu).toFixed(2);
+
+  const procesarPagoYOrden = () => {
+    if (carrito.length === 0) return;
+    if (!nombreCliente.trim() || !telefonoCliente.trim()) {
+      alert("Por favor, ingresa tu nombre y teléfono para procesar la orden de recogida.");
+      return;
+    }
+
+    setProcesandoPago(true);
+
+    // Aquí se conecta con la API del backend / pasarela de pago seleccionada
+    setTimeout(() => {
+      setProcesandoPago(false);
+      alert(`¡Pago completado con éxito vía ${metodoPago === 'ath' ? 'ATH Móvil' : 'Tarjeta'}!\n\nTu orden ha sido registrada. Te notificaremos al ${telefonoCliente} cuando esté lista para recoger.`);
+      setCarrito([]);
+      setVerCarrito(false);
+      setNombreCliente('');
+      setTelefonoCliente('');
+    }, 1500);
+  };
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans pb-24">
@@ -1449,15 +1491,173 @@ function MenuApp() {
         </div>
       )}
 
+      {/* Modal del Carrito / Checkout */}
+      {verCarrito && (
+        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm flex justify-center items-end sm:items-center p-0 sm:p-4">
+          <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] flex flex-col">
+            <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
+              <h2 className="text-xl font-bold text-amber-500">Checkout - Recogida</h2>
+              <button onClick={() => setVerCarrito(false)} className="text-neutral-400 hover:text-white font-bold text-lg px-2">✕</button>
+            </div>
+
+            {/* Datos del Cliente */}
+            <div className="my-3 space-y-2">
+              <div>
+                <label className="block text-xs text-neutral-400 mb-1">Nombre para recoger *</label>
+                <input
+                  type="text"
+                  value={nombreCliente}
+                  onChange={(e) => setNombreCliente(e.target.value)}
+                  placeholder="Ej. Juan Pérez"
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-neutral-400 mb-1">Teléfono para avisar cuando esté listo *</label>
+                <input
+                  type="tel"
+                  value={telefonoCliente}
+                  onChange={(e) => setTelefonoCliente(e.target.value)}
+                  placeholder="Ej. 787-555-1234"
+                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-y-auto flex-grow space-y-3 pr-1 my-2">
+              {carrito.length === 0 ? (
+                <p className="text-center text-neutral-500 py-8 text-sm">Tu carrito está vacío.</p>
+              ) : (
+                carrito.map((item) => (
+                  <div key={item.cartId} className="bg-neutral-800/40 border border-neutral-800 rounded-2xl p-3 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-bold text-neutral-100 text-sm">{item.nombre}</h4>
+                        <span className="text-xs text-amber-500 font-semibold">${(item.precioCalculado * item.cantidad).toFixed(2)}</span>
+                      </div>
+                      <button 
+                        onClick={() => eliminarItemCarrito(item.cartId)}
+                        className="text-neutral-500 hover:text-red-400 text-xs font-bold px-1"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <div className="text-xs text-neutral-400 space-y-0.5">
+                      {Object.entries(item.opcionesDetalle).map(([grupo, val], gIdx) => {
+                        if (Array.isArray(val) && val.length > 0) {
+                          return (
+                            <p key={gIdx}><span className="text-neutral-300 font-medium">{grupo}:</span> {val.map(i => i.nombre).join(', ')}</p>
+                          );
+                        } else if (val && val.nombre) {
+                          return (
+                            <p key={gIdx}><span className="text-neutral-300 font-medium">{grupo}:</span> {val.nombre}</p>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-1">
+                      <button 
+                        onClick={() => modificarCantidadItem(item.cartId, -1)}
+                        className="w-7 h-7 bg-neutral-800 border border-neutral-700 rounded-lg text-amber-500 font-bold flex items-center justify-center hover:bg-neutral-700 text-sm"
+                      >
+                        -
+                      </button>
+                      <span className="text-sm font-bold text-neutral-200">{item.cantidad}</span>
+                      <button 
+                        onClick={() => modificarCantidadItem(item.cartId, 1)}
+                        className="w-7 h-7 bg-neutral-800 border border-neutral-700 rounded-lg text-amber-500 font-bold flex items-center justify-center hover:bg-neutral-700 text-sm"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Selección de Método de Pago */}
+            {carrito.length > 0 && (
+              <div className="pt-3 border-t border-neutral-800 space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-neutral-300 mb-2">Método de Pago:</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMetodoPago('ath')}
+                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                        metodoPago === 'ath'
+                          ? 'bg-orange-500/20 border-orange-500 text-orange-400'
+                          : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
+                      }`}
+                    >
+                      <span>📲 ATH Móvil</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMetodoPago('card')}
+                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                        metodoPago === 'card'
+                          ? 'bg-blue-500/20 border-blue-500 text-blue-400'
+                          : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
+                      }`}
+                    >
+                      <span>💳 Tarjeta</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Desglose de Totales */}
+                <div className="space-y-1 text-xs text-neutral-400 pt-1">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>IVU (11.5%)</span>
+                    <span>${ivu.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold text-neutral-100 pt-1 border-t border-neutral-800">
+                    <span>Total a Pagar</span>
+                    <span className="text-amber-500 text-base font-black">${totalPrecio}</span>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={procesarPagoYOrden}
+                  disabled={procesandoPago}
+                  className={`w-full text-neutral-950 font-extrabold py-3.5 px-5 rounded-2xl shadow-xl flex justify-center items-center gap-2 transition-all ${
+                    metodoPago === 'ath' 
+                      ? 'bg-orange-500 hover:bg-orange-400' 
+                      : 'bg-blue-500 hover:bg-blue-400 text-white'
+                  }`}
+                >
+                  {procesandoPago ? (
+                    <span>Procesando pago...</span>
+                  ) : (
+                    <span>Pagar con {metodoPago === 'ath' ? 'ATH Móvil' : 'Tarjeta'} • ${totalPrecio}</span>
+                  )}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Botón Flotante del Carrito */}
       {totalArticulos > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-20">
-          <button className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center transition-all">
+          <button 
+            onClick={() => setVerCarrito(true)}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center transition-all"
+          >
             <div className="flex items-center gap-2">
-              <span className="bg-neutral-950 text-amber-500 text-xs px-2 py-0.5 rounded-full">
+              <span className="bg-neutral-950 text-amber-500 text-xs px-2 py-0.5 rounded-full font-extrabold">
                 {totalArticulos}
               </span>
-              <span>Ver mi Orden</span>
+              <span>Ir a Pagar / Checkout</span>
             </div>
             <span>${totalPrecio}</span>
           </button>
