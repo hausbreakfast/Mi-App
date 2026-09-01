@@ -6,15 +6,19 @@
   <title>HAU'S Breakfast & Brunch</title>
 
   <!-- Enlace al Manifest -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f59e0b">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f59e0b">
 
-<!-- Registro del Service Worker -->
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+  <!-- Iconos para la pantalla de inicio y navegadores -->
+  <link rel="icon" type="image/png" href="./icon.png">
+  <link rel="apple-touch-icon" href="./icon.png">
+
+  <!-- Registro del Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
   
   <!-- Tailwind CSS para Estilos -->
   <script src="https://cdn.tailwindcss.com"></script>
