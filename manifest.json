@@ -1,23 +1,23 @@
 {
-  "id": "/Mi-App/",
+  "id": "./",
   "name": "HAU'S Breakfast & Brunch",
   "short_name": "HAU'S",
   "description": "Menú digital interactivo y pedidos en línea para HAU'S Breakfast & Brunch.",
-  "start_url": "/Mi-App/index.html",
-  "scope": "/Mi-App/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0a",
   "theme_color": "#f59e0b",
   "icons": [
     {
-      "src": "https://lh3.googleusercontent/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
+      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://lh3.googleusercontent/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
+      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -25,7 +25,7 @@
   ],
   "screenshots": [
     {
-      "src": "https://lh3.googleusercontent/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
+      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
       "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
