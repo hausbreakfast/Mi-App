@@ -11,7 +11,7 @@
   "theme_color": "#f59e0b",
   "icons": [
     {
-      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
+      "src": "./icon.png",
       "sizes": "1600x1600",
       "type": "image/png",
       "purpose": "any maskable"
@@ -19,7 +19,7 @@
   ],
   "screenshots": [
     {
-      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
+      "src": "./icon.png",
       "sizes": "1600x1600",
       "type": "image/png",
       "form_factor": "narrow",
