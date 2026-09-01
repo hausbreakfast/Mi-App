@@ -12,7 +12,7 @@
   "icons": [
     {
       "src": "./icon.png",
-      "sizes": "1600x1600",
+      "sizes": "2048x2048",
       "type": "image/png",
       "purpose": "any maskable"
     }
@@ -20,7 +20,7 @@
   "screenshots": [
     {
       "src": "./icon.png",
-      "sizes": "1600x1600",
+      "sizes": "2048x2048",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Menú Principal HAU'S"
