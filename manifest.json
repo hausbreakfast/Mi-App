@@ -12,13 +12,7 @@
   "icons": [
     {
       "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
-      "sizes": "512x512",
+      "sizes": "1600x1600",
       "type": "image/png",
       "purpose": "any maskable"
     }
@@ -26,7 +20,7 @@
   "screenshots": [
     {
       "src": "https://lh3.googleusercontent.com/d/1RuAMoLOBCRZVdjfAxzm4xI9Nrd6geWjB",
-      "sizes": "1080x1920",
+      "sizes": "1600x1600",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Menú Principal HAU'S"
