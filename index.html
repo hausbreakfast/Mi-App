@@ -83,8 +83,8 @@ const OPCIONES_UNTAR_SANDWICH = [
 ];
 
 const OPCION_COMBO = [
-  { nombre: 'Sin Combo', precio: 0 },
-  { nombre: 'Hacerlo Combo (Acompañante + Bebida base)', precio: 3.00 }
+  { nombre: 'Solo', precio: 0 },
+  { nombre: 'En Combo (Acompañante + Bebida base)', precio: 3.00 }
 ];
 
 const ACOMPANANTES_COMBO = [
@@ -96,8 +96,8 @@ const ACOMPANANTES_COMBO = [
 const BEBIDAS_BASE_Y_SUSTITUCIONES = [
   { nombre: 'Agua', precio: 0 },
   { nombre: 'Refresco', precio: 0 },
-  { nombre: 'Limonada 12 oz', precio: 0 },
-  { nombre: 'Limonada 16 oz', precio: 1.00 },
+  { nombre: 'Limonada 12 oz', precio: 1.00 },
+  { nombre: 'Limonada 16 oz', precio: 2.00 },
   { nombre: 'Limonada 32 oz', precio: 3.00 }
 ];
 
@@ -106,15 +106,17 @@ function obtenerOpcionRemoverIngredientes(descripcion) {
   if (!descripcion) return null;
   
   const listaLimpia = descripcion
-    .replace(/\b(y|o|con|servido con|decorado con|en|salsa de su selección|salsa de preferencia|seleccione tamaño|incluye combo)\b/gi, ',')
+    .replace(/\b(y|o|con|sin|de|del|en|servido con|decorado con|salsa de su selección|salsa de preferencia|seleccione tamaño|incluye combo)\b/gi, ',')
     .split(',')
     .map(ing => ing.trim())
     .filter(ing => ing.length > 2 && !ing.toLowerCase().includes('selección') && !ing.toLowerCase().includes('preferencia'));
 
   const ingredientesUnicos = [...new Set(listaLimpia)];
 
+  if (ingredientesUnicos.length === 0) return null;
+
   const opcionesModificacion = [
-    { nombre: 'Servir tal como viene (Sin cambios)', precio: 0, esDefault: true },
+    { nombre: 'Servir tal como viene', precio: 0, esDefault: true },
     ...ingredientesUnicos.map(ing => ({
       nombre: `Sin ${ing.charAt(0).toUpperCase() + ing.slice(1)}`,
       precio: 0,
@@ -153,7 +155,7 @@ const MENU_DATA = [
   {
     id: 101,
     nombre: 'Smash Breakfast Burger',
-    descripcion: 'Carne de res, queso americano, huevo frito, tocineta, hashbrown',
+    descripcion: 'Queso americano, huevo frito, tocineta, hashbrown',
     precio: 8.00,
     categoria: 'Especialidades',
     imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
@@ -167,7 +169,7 @@ const MENU_DATA = [
   {
     id: 102,
     nombre: 'Mallorca Breakfast Burger',
-    descripcion: 'Pan de Mallorca, azúcar glass, carne de res, huevo frito, lechuga, tomate, tocineta',
+    descripcion: 'Azúcar glass, huevo frito, lechuga, tomate, tocineta',
     precio: 8.00,
     categoria: 'Especialidades',
     imagen: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60',
@@ -181,7 +183,7 @@ const MENU_DATA = [
   {
     id: 103,
     nombre: 'Chicken Waffles',
-    descripcion: '2 strips de pollo, lechuga, tomate, queso suizo',
+    descripcion: 'Lechuga, tomate, queso suizo',
     precio: 9.50,
     categoria: 'Especialidades',
     imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60',
@@ -192,7 +194,7 @@ const MENU_DATA = [
   {
     id: 201,
     nombre: 'Super Desayuno Americano',
-    descripcion: 'Huevos revueltos, queso americano, bacon, jamón, hashbrown, 3 tostadas',
+    descripcion: 'Queso americano, bacon, jamón, hashbrown, 3 tostadas',
     precio: 10.00,
     categoria: 'Super Desayunos',
     imagen: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=500&auto=format&fit=crop&q=60'
@@ -200,7 +202,7 @@ const MENU_DATA = [
   {
     id: 202,
     nombre: 'Super Desayuno Suizo',
-    descripcion: 'Huevos revueltos, jamón de pavo, cebollas, pimientos, tomate, queso suizo, hashbrown, 3 tostadas, frutas mixtas',
+    descripcion: 'Jamón de pavo, cebollas, pimientos, tomate, queso suizo, hashbrown, 3 tostadas, frutas mixtas',
     precio: 11.00,
     categoria: 'Super Desayunos',
     imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60'
@@ -208,7 +210,7 @@ const MENU_DATA = [
   {
     id: 203,
     nombre: 'Super Desayuno Mexicano',
-    descripcion: 'Huevos revueltos, jamón, cebollas, pimientos, queso rallado, 3 tostadas, guacamole, tocineta, hashbrown',
+    descripcion: 'Jamón, cebollas, pimientos, queso rallado, 3 tostadas, guacamole, tocineta, hashbrown',
     precio: 12.00,
     categoria: 'Super Desayunos',
     imagen: 'https://images.unsplash.com/photo-1513442542250-854d436a73f2?w=500&auto=format&fit=crop&q=60'
@@ -216,7 +218,7 @@ const MENU_DATA = [
   {
     id: 204,
     nombre: 'Super Desayuno Francés',
-    descripcion: 'Huevos revueltos, cebollas, pimientos, tostadas francesas, frutas mixtas, granola, whipped cream, bacon, hashbrown',
+    descripcion: 'Cebollas, pimientos, tostadas francesas, frutas mixtas, granola, whipped cream, bacon, hashbrown',
     precio: 13.00,
     categoria: 'Super Desayunos',
     imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
@@ -224,7 +226,7 @@ const MENU_DATA = [
   {
     id: 205,
     nombre: 'Hau\'s Breakfast',
-    descripcion: '3 pancakes, frutas mixtas, azúcar glass, 2 huevos, tocineta, hashbrown',
+    descripcion: 'Frutas mixtas, azúcar glass, tocineta, hashbrown',
     precio: 15.00,
     categoria: 'Super Desayunos',
     imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&auto=format&fit=crop&q=60',
@@ -239,7 +241,7 @@ const MENU_DATA = [
   {
     id: 301,
     nombre: 'Omelette de Pastrami',
-    descripcion: 'Pastrami, cebollas, pimientos, queso suizo',
+    descripcion: 'Cebollas, pimientos, queso suizo',
     precio: 10.00,
     categoria: 'Omelettes',
     imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
@@ -248,7 +250,7 @@ const MENU_DATA = [
   {
     id: 302,
     nombre: 'Omelette de Pavo',
-    descripcion: 'Pavo, cebollas, pimientos, queso suizo',
+    descripcion: 'Cebollas, pimientos, queso suizo',
     precio: 8.00,
     categoria: 'Omelettes',
     imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
@@ -257,7 +259,7 @@ const MENU_DATA = [
   {
     id: 303,
     nombre: 'Omelette de Jamón',
-    descripcion: 'Jamón, cebollas, pimientos, queso americano',
+    descripcion: 'Cebollas, pimientos, queso americano',
     precio: 7.00,
     categoria: 'Omelettes',
     imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
@@ -266,7 +268,7 @@ const MENU_DATA = [
   {
     id: 304,
     nombre: 'Omelette de Bacon',
-    descripcion: 'Bacon, cebollas, pimientos, queso suizo',
+    descripcion: 'Cebollas, pimientos, queso suizo',
     precio: 8.00,
     categoria: 'Omelettes',
     imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
@@ -275,7 +277,7 @@ const MENU_DATA = [
   {
     id: 305,
     nombre: 'Mega Omelette',
-    descripcion: '3 carnes de su selección, cebollas, pimientos, queso suizo',
+    descripcion: 'Cebollas, pimientos, queso suizo',
     precio: 15.00,
     categoria: 'Omelettes',
     imagen: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=500&auto=format&fit=crop&q=60',
@@ -289,7 +291,7 @@ const MENU_DATA = [
   {
     id: 401,
     nombre: 'Tostadas Francesas',
-    descripcion: '2 tostadas en pan de mallorca, frutas mixtas, granola, azúcar glass, whipped cream',
+    descripcion: 'Frutas mixtas, granola, azúcar glass, whipped cream',
     precio: 8.00,
     categoria: 'Clásicos',
     imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
@@ -297,7 +299,7 @@ const MENU_DATA = [
   {
     id: 402,
     nombre: 'Huevos Revueltos',
-    descripcion: 'Huevos revueltos, cebolla, pimientos, tostadas con mantequilla',
+    descripcion: 'Cebolla, pimientos, tostadas con mantequilla',
     precio: 6.00,
     categoria: 'Clásicos',
     imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60',
@@ -305,17 +307,20 @@ const MENU_DATA = [
   },
   {
     id: 403,
-    nombre: 'Huevos Fritos',
-    descripcion: '2 huevos over easy, tostadas con mantequilla',
+    nombre: 'Huevos Fritos, jamon y tostadas',
+    descripcion: 'Tostadas con mantequilla',
     precio: 5.00,
     categoria: 'Clásicos',
     imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60',
-    opciones: [{ nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Jamón', precio: 0 }, { nombre: 'Pavo', precio: 0 }, { nombre: 'Bacon', precio: 0 }] }]
+    opciones: [
+      { nombre: 'Proteína', tipo: 'radio', items: [{ nombre: 'Jamón', precio: 0 }, { nombre: 'Pavo', precio: 0 }, { nombre: 'Bacon', precio: 0 }] },
+      { nombre: 'Preparación de Huevos', tipo: 'radio', items: [{ nombre: 'over easy', precio: 0 }, { nombre: 'over medium', precio: 0 }, { nombre: 'over hard', precio: 0 }] }
+    ]
   },
   {
     id: 404,
     nombre: 'Burrito Desayuno',
-    descripcion: 'Huevos revueltos, cebolla, pimiento, tortilla de harina',
+    descripcion: 'Cebolla, pimiento, queso rallado,tortilla de trigo o espinaca',
     precio: 7.00,
     categoria: 'Clásicos',
     imagen: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=500&auto=format&fit=crop&q=60',
@@ -327,7 +332,7 @@ const MENU_DATA = [
   {
     id: 405,
     nombre: 'Pancakes Tacos',
-    descripcion: '2 pancakes, frutas mixtas, azúcar glass, whipped cream',
+    descripcion: 'Frutas mixtas, azúcar glass, whipped cream',
     precio: 8.00,
     categoria: 'Clásicos',
     imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60',
@@ -338,7 +343,7 @@ const MENU_DATA = [
   {
     id: 501,
     nombre: 'El Sencillo Burger',
-    descripcion: 'Carne de res, queso americano, ketchup',
+    descripcion: 'Queso americano, ketchup',
     precio: 7.50,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
@@ -352,7 +357,7 @@ const MENU_DATA = [
   {
     id: 502,
     nombre: 'El Clásico Burger',
-    descripcion: 'Carne de res, queso americano, lechuga, tomate, pepinillos, ketchup',
+    descripcion: 'Queso americano, lechuga, tomate, pepinillos, ketchup',
     precio: 9.00,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&auto=format&fit=crop&q=60',
@@ -366,7 +371,7 @@ const MENU_DATA = [
   {
     id: 503,
     nombre: 'Pizza Burger',
-    descripcion: 'Carne de res, queso, pepperoni, bacon, salsa marinara',
+    descripcion: 'Queso rallado, pepperoni, bacon, salsa marinara',
     precio: 10.50,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
@@ -379,7 +384,7 @@ const MENU_DATA = [
   {
     id: 504,
     nombre: 'Bacon Burger',
-    descripcion: 'Carne de res, queso americano, bacon, lechuga, tomate, ketchup',
+    descripcion: 'Queso americano, bacon, lechuga, tomate, ketchup',
     precio: 10.50,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&auto=format&fit=crop&q=60',
@@ -393,7 +398,7 @@ const MENU_DATA = [
   {
     id: 505,
     nombre: 'Caramel Onion Burger',
-    descripcion: 'Carne de res, queso americano, cebollas caramelizadas, bacon, lechuga, tomate, ketchup',
+    descripcion: 'Queso americano, cebollas caramelizadas, bacon, lechuga, tomate, ketchup',
     precio: 11.00,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60',
@@ -407,7 +412,7 @@ const MENU_DATA = [
   {
     id: 506,
     nombre: 'Grill Chicken Burger',
-    descripcion: 'Pechuga de pollo, queso americano, lechuga, tomate, ketchup',
+    descripcion: 'Queso americano, lechuga, tomate, ketchup',
     precio: 10.50,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1606755962773-d324e0a13086?w=500&auto=format&fit=crop&q=60',
@@ -421,7 +426,7 @@ const MENU_DATA = [
   {
     id: 507,
     nombre: 'El Boricua Burger',
-    descripcion: 'Carne de res, queso americano, amarillos, queso crema, bacon, lechuga, tomate, ketchup',
+    descripcion: 'Queso americano, amarillos, queso crema, bacon, lechuga, tomate, ketchup',
     precio: 12.00,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&auto=format&fit=crop&q=60',
@@ -435,7 +440,7 @@ const MENU_DATA = [
   {
     id: 508,
     nombre: 'Doble Bacon Burger',
-    descripcion: 'Doble carne de res, queso americano, bacon, cebollas caramelizadas, ketchup',
+    descripcion: 'Queso americano, bacon, cebollas caramelizadas, ketchup',
     precio: 12.00,
     categoria: 'Burgers',
     imagen: 'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=500&auto=format&fit=crop&q=60',
@@ -652,7 +657,7 @@ const MENU_DATA = [
     ]
   },
 
-  // --- BOCADILLOS (PORCIONES PEQUEÑAS) ---
+  // --- BOCADILLOS ---
   {
     id: 651,
     nombre: 'Bocadillo Jamón y Queso',
@@ -710,7 +715,7 @@ const MENU_DATA = [
   },
   {
     id: 702,
-    nombre: 'Pancake Nutella Biscuit',
+    nombre: 'Pancake Oreo Cheesecake',
     descripcion: 'Glaseado de la casa, Nutella, Oreo, trozos de cheesecake, whipped cream',
     precio: 8.00,
     categoria: 'Pancakes & Waffles',
@@ -724,14 +729,6 @@ const MENU_DATA = [
     categoria: 'Pancakes & Waffles',
     imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60',
     opciones: [{ nombre: 'Salsa o Glaseado', tipo: 'radio', items: [{ nombre: 'Syrup Tradicional', precio: 0 }, { nombre: 'Nutella', precio: 0 }, { nombre: 'Glaseado de la Casa', precio: 0 }] }]
-  },
-  {
-    id: 704,
-    nombre: 'Pancake Oreo Cheesecake',
-    descripcion: 'Oreo, galleta, trozos de cheesecake, whipped cream, glaseado',
-    precio: 8.00,
-    categoria: 'Pancakes & Waffles',
-    imagen: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&auto=format&fit=crop&q=60'
   },
   {
     id: 705,
@@ -777,7 +774,7 @@ const MENU_DATA = [
   // --- WAFFLES RELLENOS ---
   {
     id: 751,
-    nombre: 'Waffle Jamón, Queso y Huevo',
+    nombre: 'Jamón, Queso y Huevo',
     descripcion: 'Jamón, queso americano, 2 huevos fritos, queso rallado, perejil, azúcar en polvo',
     precio: 7.00,
     categoria: 'Waffles Rellenos',
@@ -786,7 +783,7 @@ const MENU_DATA = [
   {
     id: 752,
     nombre: 'Waffle Revoltillo',
-    descripcion: 'Huevos revueltos, cebollas, pimientos, queso americano, queso rallado, perejil, azúcar en polvo',
+    descripcion: 'Cebollas, pimientos, queso americano, queso rallado, perejil, azúcar en polvo',
     precio: 8.00,
     categoria: 'Waffles Rellenos',
     imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60',
@@ -795,7 +792,7 @@ const MENU_DATA = [
   {
     id: 753,
     nombre: 'Waffle Pastrami',
-    descripcion: 'Pastrami, cebollas, pimiento, queso suizo, queso rallado, perejil',
+    descripcion: 'Cebollas, pimiento, queso suizo, queso rallado, perejil',
     precio: 9.00,
     categoria: 'Waffles Rellenos',
     imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
@@ -803,7 +800,7 @@ const MENU_DATA = [
   {
     id: 754,
     nombre: 'Waffle Pollo, Bacon y Queso',
-    descripcion: '3 tiras de pollo empanado, bacon, queso cheddar, perejil, azúcar en polvo',
+    descripcion: 'Bacon, queso cheddar, perejil, azúcar en polvo',
     precio: 10.00,
     categoria: 'Waffles Rellenos',
     imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
@@ -811,7 +808,7 @@ const MENU_DATA = [
   {
     id: 755,
     nombre: 'Waffle Pernil y Jamón',
-    descripcion: 'Pernil desmenuzado, jamón, queso suizo, pepinillos',
+    descripcion: 'Queso suizo, pepinillos',
     precio: 11.00,
     categoria: 'Waffles Rellenos',
     imagen: 'https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=500&auto=format&fit=crop&q=60'
@@ -856,7 +853,7 @@ const MENU_DATA = [
   {
     id: 902,
     nombre: 'Revueltos Niños',
-    descripcion: '2 huevos revueltos, jamón, queso americano, 2 tostadas',
+    descripcion: 'Jamón, queso americano, 2 tostadas',
     precio: 5.00,
     categoria: 'Menú de Niños',
     imagen: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=500&auto=format&fit=crop&q=60'
@@ -864,7 +861,7 @@ const MENU_DATA = [
   {
     id: 903,
     nombre: 'Tostadas Francesas Niños',
-    descripcion: '1 rebanada de tostada francesa, frutas, azúcar en polvo, syrup',
+    descripcion: 'Frutas, azúcar en polvo, syrup',
     precio: 5.00,
     categoria: 'Menú de Niños',
     imagen: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?w=500&auto=format&fit=crop&q=60'
@@ -872,7 +869,7 @@ const MENU_DATA = [
   {
     id: 904,
     nombre: 'Quesadillas Niños',
-    descripcion: 'Tortilla de plantilla con queso rallado derretido',
+    descripcion: 'Queso rallado derretido',
     precio: 5.00,
     categoria: 'Menú de Niños',
     imagen: 'https://images.unsplash.com/photo-1618040996337-56904b7850b9?w=500&auto=format&fit=crop&q=60'
@@ -1243,16 +1240,26 @@ const MENU_DATA = [
   }
 ];
 
-// --- COMPONENTE PRINCIPAL ---
+//// --- COMPONENTE PRINCIPAL ---
 function MenuApp() {
+  const { useState } = React;
+
   const [categoriaActiva, setCategoriaActiva] = useState('Especialidades');
   const [carrito, setCarrito] = useState([]);
   const [productoSeleccionado, setProductoSeleccionado] = useState(null);
   const [opcionesElegidas, setOpcionesElegidas] = useState({});
-  const [verCarrito, setVerCarrito] = useState(false);
-  const [nombreCliente, setNombreCliente] = useState('');
-  const [telefonoCliente, setTelefonoCliente] = useState('');
-  const [metodoPago, setMetodoPago] = useState('ath'); // 'ath' o 'card'
+  const [mostrarCarrito, setMostrarCarrito] = useState(false);
+  
+  // Estado para la opción de pago seleccionada (por defecto ATH)
+  const [metodoPago, setMetodoPago] = useState('ath'); 
+
+  // Estado para capturar los datos de la tarjeta cuando se pague con tarjeta
+  const [datosTarjeta, setDatosTarjeta] = useState({
+    cardHolder: '',
+    cardNumber: '',
+    expiry: '',
+    cvv: ''
+  });
   const [procesandoPago, setProcesandoPago] = useState(false);
 
   const productosFiltrados = MENU_DATA.filter(p => p.categoria === categoriaActiva);
@@ -1266,9 +1273,19 @@ function MenuApp() {
     }
 
     const estadoInicial = {};
-    if (opcionRemover) {
-      estadoInicial[opcionRemover.nombre] = [opcionRemover.items[0]];
-    }
+
+    opcionesCompletas.forEach(grupo => {
+      if (grupo.tipo === 'checkbox') {
+        const itemDefault = grupo.items?.find(opt => opt.esDefault);
+        if (itemDefault) {
+          estadoInicial[grupo.nombre] = [itemDefault];
+        } else {
+          estadoInicial[grupo.nombre] = [];
+        }
+      } else if (grupo.tipo === 'radio') {
+        estadoInicial[grupo.nombre] = grupo.items?.[0] || null;
+      }
+    });
 
     setProductoSeleccionado({
       ...producto,
@@ -1286,8 +1303,8 @@ function MenuApp() {
     setOpcionesElegidas({ ...opcionesElegidas, [grupo]: item });
   };
 
-  const toggleOpcionCheckbox = (grupo, item) => {
-    const seleccionados = opcionesElegidas[grupo] || [];
+  const toggleOpcionCheckbox = (grupoNombre, item, listaOpciones) => {
+    const seleccionados = opcionesElegidas[grupoNombre] || [];
     const esDefaultOption = item.esDefault;
 
     let nuevos = [];
@@ -1297,7 +1314,7 @@ function MenuApp() {
     } else {
       const sinDefault = seleccionados.filter(i => !i.esDefault);
       const existe = sinDefault.some(i => i.nombre === item.nombre);
-      
+
       if (existe) {
         nuevos = sinDefault.filter(i => i.nombre !== item.nombre);
       } else {
@@ -1305,14 +1322,12 @@ function MenuApp() {
       }
 
       if (nuevos.length === 0) {
-        const opcionDefault = productoSeleccionado.opcionesCompletas
-          .find(g => g.nombre === grupo)?.items
-          .find(i => i.esDefault);
+        const opcionDefault = listaOpciones?.find(i => i.esDefault);
         if (opcionDefault) nuevos = [opcionDefault];
       }
     }
 
-    setOpcionesElegidas({ ...opcionesElegidas, [grupo]: nuevos });
+    setOpcionesElegidas({ ...opcionesElegidas, [grupoNombre]: nuevos });
   };
 
   const calcularPrecioProductoModal = () => {
@@ -1320,7 +1335,7 @@ function MenuApp() {
     let extra = 0;
     Object.values(opcionesElegidas).forEach(val => {
       if (Array.isArray(val)) {
-        val.forEach(i => extra += i.precio);
+        val.forEach(i => extra += (i.precio || 0));
       } else if (val && val.precio) {
         extra += val.precio;
       }
@@ -1332,51 +1347,83 @@ function MenuApp() {
     const itemFinal = {
       ...productoSeleccionado,
       precioCalculado: calcularPrecioProductoModal(),
-      opcionesDetalle: { ...opcionesElegidas },
-      cartId: Date.now(),
-      cantidad: 1
+      opcionesDetalle: opcionesElegidas,
+      cartId: Date.now()
     };
     setCarrito([...carrito, itemFinal]);
     cerrarModal();
   };
 
-  const modificarCantidadItem = (cartId, delta) => {
-    setCarrito(prev => prev.map(item => {
-      if (item.cartId === cartId) {
-        const nuevaCantidad = item.cantidad + delta;
-        return nuevaCantidad > 0 ? { ...item, cantidad: nuevaCantidad } : null;
+  const handleInputChangeTarjeta = (e) => {
+    const { name, value } = e.target;
+    setDatosTarjeta({
+      ...datosTarjeta,
+      [name]: value
+    });
+  };
+
+  // --- CÁLCULO DE SUBTOTAL, IMPUESTOS (IVU 6% + 1%) Y TOTAL ---
+  const subtotal = carrito.reduce((sum, item) => sum + (item.precioCalculado || item.precio), 0);
+  const impuestoEstatal = subtotal * 0.06;
+  const impuestoMunicipal = subtotal * 0.01;
+  const totalImpuestos = impuestoEstatal + impuestoMunicipal;
+  const totalPrecio = (subtotal + totalImpuestos).toFixed(2);
+  const totalArticulos = carrito.length;
+
+  const procesarPedido = async () => {
+    if (metodoPago === 'tarjeta') {
+      // Validar datos de tarjeta
+      if (!datosTarjeta.cardHolder || !datosTarjeta.cardNumber || !datosTarjeta.expiry || !datosTarjeta.cvv) {
+        alert('Por favor, completa todos los campos de la tarjeta.');
+        return;
       }
-      return item;
-    }).filter(Boolean));
-  };
 
-  const eliminarItemCarrito = (cartId) => {
-    setCarrito(prev => prev.filter(item => item.cartId !== cartId));
-  };
+      setProcesandoPago(true);
 
-  const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-  const subtotal = carrito.reduce((sum, item) => sum + (item.precioCalculado * item.cantidad), 0);
-  const ivu = subtotal * 0.115; // IVU Puerto Rico (11.5%)
-  const totalPrecio = (subtotal + ivu).toFixed(2);
+      try {
+        const response = await fetch('procesar_pago.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            subtotal: subtotal.toFixed(2),
+            tax_estatal: impuestoEstatal.toFixed(2),
+            tax_municipal: impuestoMunicipal.toFixed(2),
+            amount: totalPrecio,
+            card_holder: datosTarjeta.cardHolder,
+            card_number: datosTarjeta.cardNumber,
+            expiry: datosTarjeta.expiry,
+            cvv: datosTarjeta.cvv,
+            carrito: carrito
+          })
+        });
 
-  const procesarPagoYOrden = () => {
-    if (carrito.length === 0) return;
-    if (!nombreCliente.trim() || !telefonoCliente.trim()) {
-      alert("Por favor, ingresa tu nombre y teléfono para procesar la orden de recogida.");
-      return;
-    }
+        const resultado = await response.json();
 
-    setProcesandoPago(true);
+        if (resultado.success) {
+          alert(`¡Pago procesado exitosamente!\nID Transacción: ${resultado.txid}`);
+          setCarrito([]);
+          setMostrarCarrito(false);
+          setDatosTarjeta({ cardHolder: '', cardNumber: '', expiry: '', cvv: '' });
+        } else {
+          alert(`Error al procesar el pago: ${resultado.message}`);
+        }
+      } catch (error) {
+        alert('Ocurrió un error al conectar con el servidor de pago.');
+      } finally {
+        setProcesandoPago(false);
+      }
 
-    // Aquí se conecta con la API del backend / pasarela de pago seleccionada
-    setTimeout(() => {
-      setProcesandoPago(false);
-      alert(`¡Pago completado con éxito vía ${metodoPago === 'ath' ? 'ATH Móvil' : 'Tarjeta'}!\n\nTu orden ha sido registrada. Te notificaremos al ${telefonoCliente} cuando esté lista para recoger.`);
+    } else {
+      // Procesamiento normal para ATH Móvil o Efectivo
+      let pagoTexto = 'ATH Móvil';
+      if (metodoPago === 'efectivo') pagoTexto = 'Efectivo';
+
+      alert(`¡Pedido confirmado!\nMétodo de Pago: ${pagoTexto}\nSubtotal: $${subtotal.toFixed(2)}\nImpuestos (7%): $${totalImpuestos.toFixed(2)}\nTotal: $${totalPrecio}`);
       setCarrito([]);
-      setVerCarrito(false);
-      setNombreCliente('');
-      setTelefonoCliente('');
-    }, 1500);
+      setMostrarCarrito(false);
+    }
   };
 
   return (
@@ -1393,7 +1440,7 @@ function MenuApp() {
       </header>
 
       {/* Navegación por Categorías */}
-      <nav className="sticky top-[69px] z-10 bg-neutral-950/90 backdrop-blur-md px-4 py-3 border-b border-neutral-800 flex gap-2 overflow-x-auto no-scrollbar">
+      <nav className="sticky top-[69px] z-10 bg-neutral-950/90 backdrop-blur-md px-4 py-3 border-b border-neutral-800 flex gap-2 overflow-x-auto scrollbar-none">
         {CATEGORIAS.map((cat) => (
           <button
             key={cat}
@@ -1459,7 +1506,7 @@ function MenuApp() {
               <div key={idx} className="mb-5 border-t border-neutral-800 pt-3">
                 <h4 className="text-sm font-semibold text-neutral-200 mb-2">{grupo.nombre}</h4>
                 <div className="space-y-2">
-                  {grupo.items.map((opt, oIdx) => {
+                  {grupo.items?.map((opt, oIdx) => {
                     const isRadio = grupo.tipo === 'radio';
                     const isSelected = isRadio 
                       ? opcionesElegidas[grupo.nombre]?.nombre === opt.nombre
@@ -1468,7 +1515,7 @@ function MenuApp() {
                     return (
                       <div 
                         key={oIdx}
-                        onClick={() => isRadio ? seleccionarOpcionRadio(grupo.nombre, opt) : toggleOpcionCheckbox(grupo.nombre, opt)}
+                        onClick={() => isRadio ? seleccionarOpcionRadio(grupo.nombre, opt) : toggleOpcionCheckbox(grupo.nombre, opt, grupo.items)}
                         className={`flex justify-between items-center p-3 rounded-xl border text-sm cursor-pointer transition-all ${
                           isSelected ? 'bg-amber-500/10 border-amber-500 text-amber-400' : 'bg-neutral-800/50 border-neutral-800 text-neutral-300'
                         }`}
@@ -1486,7 +1533,7 @@ function MenuApp() {
 
             <button 
               onClick={agregarAlCarritoDesdeModal}
-              className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center"
+              className="w-full mt-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center cursor-pointer"
             >
               <span>Agregar al Pedido</span>
               <span>${calcularPrecioProductoModal().toFixed(2)}</span>
@@ -1495,183 +1542,228 @@ function MenuApp() {
         </div>
       )}
 
-      {/* Modal del Carrito / Checkout */}
-      {verCarrito && (
-        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm flex justify-center items-end sm:items-center p-0 sm:p-4">
-          <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] flex flex-col">
-            <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
-              <h2 className="text-xl font-bold text-amber-500">Checkout - Recogida</h2>
-              <button onClick={() => setVerCarrito(false)} className="text-neutral-400 hover:text-white font-bold text-lg px-2">✕</button>
-            </div>
-
-            {/* Datos del Cliente */}
-            <div className="my-3 space-y-2">
-              <div>
-                <label className="block text-xs text-neutral-400 mb-1">Nombre para recoger *</label>
-                <input
-                  type="text"
-                  value={nombreCliente}
-                  onChange={(e) => setNombreCliente(e.target.value)}
-                  placeholder="Ej. Juan Pérez"
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-neutral-400 mb-1">Teléfono para avisar cuando esté listo *</label>
-                <input
-                  type="tel"
-                  value={telefonoCliente}
-                  onChange={(e) => setTelefonoCliente(e.target.value)}
-                  placeholder="Ej. 787-555-1234"
-                  className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-3 py-2 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-amber-500"
-                />
-              </div>
-            </div>
-
-            <div className="overflow-y-auto flex-grow space-y-3 pr-1 my-2">
-              {carrito.length === 0 ? (
-                <p className="text-center text-neutral-500 py-8 text-sm">Tu carrito está vacío.</p>
-              ) : (
-                carrito.map((item) => (
-                  <div key={item.cartId} className="bg-neutral-800/40 border border-neutral-800 rounded-2xl p-3 space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-bold text-neutral-100 text-sm">{item.nombre}</h4>
-                        <span className="text-xs text-amber-500 font-semibold">${(item.precioCalculado * item.cantidad).toFixed(2)}</span>
-                      </div>
-                      <button 
-                        onClick={() => eliminarItemCarrito(item.cartId)}
-                        className="text-neutral-500 hover:text-red-400 text-xs font-bold px-1"
-                      >
-                        ✕
-                      </button>
-                    </div>
-
-                    <div className="text-xs text-neutral-400 space-y-0.5">
-                      {Object.entries(item.opcionesDetalle).map(([grupo, val], gIdx) => {
-                        if (Array.isArray(val) && val.length > 0) {
-                          return (
-                            <p key={gIdx}><span className="text-neutral-300 font-medium">{grupo}:</span> {val.map(i => i.nombre).join(', ')}</p>
-                          );
-                        } else if (val && val.nombre) {
-                          return (
-                            <p key={gIdx}><span className="text-neutral-300 font-medium">{grupo}:</span> {val.nombre}</p>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-
-                    <div className="flex items-center justify-end gap-3 pt-1">
-                      <button 
-                        onClick={() => modificarCantidadItem(item.cartId, -1)}
-                        className="w-7 h-7 bg-neutral-800 border border-neutral-700 rounded-lg text-amber-500 font-bold flex items-center justify-center hover:bg-neutral-700 text-sm"
-                      >
-                        -
-                      </button>
-                      <span className="text-sm font-bold text-neutral-200">{item.cantidad}</span>
-                      <button 
-                        onClick={() => modificarCantidadItem(item.cartId, 1)}
-                        className="w-7 h-7 bg-neutral-800 border border-neutral-700 rounded-lg text-amber-500 font-bold flex items-center justify-center hover:bg-neutral-700 text-sm"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Selección de Método de Pago */}
-            {carrito.length > 0 && (
-              <div className="pt-3 border-t border-neutral-800 space-y-3">
-                <div>
-                  <label className="block text-xs font-semibold text-neutral-300 mb-2">Método de Pago:</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setMetodoPago('ath')}
-                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
-                        metodoPago === 'ath'
-                          ? 'bg-orange-500/20 border-orange-500 text-orange-400'
-                          : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
-                      }`}
-                    >
-                      <span>📲 ATH Móvil</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMetodoPago('card')}
-                      className={`p-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
-                        metodoPago === 'card'
-                          ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                          : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
-                      }`}
-                    >
-                      <span>💳 Tarjeta</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Desglose de Totales */}
-                <div className="space-y-1 text-xs text-neutral-400 pt-1">
-                  <div className="flex justify-between">
-                    <span>Subtotal</span>
-                    <span>${subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>IVU (11.5%)</span>
-                    <span>${ivu.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm font-bold text-neutral-100 pt-1 border-t border-neutral-800">
-                    <span>Total a Pagar</span>
-                    <span className="text-amber-500 text-base font-black">${totalPrecio}</span>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={procesarPagoYOrden}
-                  disabled={procesandoPago}
-                  className={`w-full text-neutral-950 font-extrabold py-3.5 px-5 rounded-2xl shadow-xl flex justify-center items-center gap-2 transition-all ${
-                    metodoPago === 'ath' 
-                      ? 'bg-orange-500 hover:bg-orange-400' 
-                      : 'bg-blue-500 hover:bg-blue-400 text-white'
-                  }`}
-                >
-                  {procesandoPago ? (
-                    <span>Procesando pago...</span>
-                  ) : (
-                    <span>Pagar con {metodoPago === 'ath' ? 'ATH Móvil' : 'Tarjeta'} • ${totalPrecio}</span>
-                  )}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Botón Flotante del Carrito */}
       {totalArticulos > 0 && (
         <div className="fixed bottom-4 left-4 right-4 max-w-md mx-auto z-20">
           <button 
-            onClick={() => setVerCarrito(true)}
-            className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center transition-all"
+            onClick={() => setMostrarCarrito(true)}
+            className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 px-5 rounded-2xl shadow-xl flex justify-between items-center transition-all cursor-pointer"
           >
             <div className="flex items-center gap-2">
-              <span className="bg-neutral-950 text-amber-500 text-xs px-2 py-0.5 rounded-full font-extrabold">
+              <span className="bg-neutral-950 text-amber-500 text-xs px-2 py-0.5 rounded-full">
                 {totalArticulos}
               </span>
-              <span>Ir a Pagar / Checkout</span>
+              <span>Ver mi Orden</span>
             </div>
             <span>${totalPrecio}</span>
           </button>
+        </div>
+      )}
+
+      {/* Modal de la Orden / Carrito con Métodos de Pago e Impuestos */}
+      {mostrarCarrito && (
+        <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm flex justify-center items-end sm:items-center p-0 sm:p-4">
+          <div className="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[90vh] flex flex-col shadow-2xl overflow-y-auto">
+            
+            {/* Encabezado */}
+            <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
+              <h2 className="text-xl font-bold text-amber-500">Resumen de tu Orden</h2>
+              <button 
+                onClick={() => setMostrarCarrito(false)} 
+                className="text-neutral-400 hover:text-white font-bold text-lg px-2 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Lista de productos */}
+            <div className="my-4 flex-1 space-y-3 pr-1">
+              {carrito.map((item) => (
+                <div key={item.cartId} className="flex flex-col bg-neutral-800/60 p-3.5 rounded-2xl border border-neutral-800 gap-1">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-bold text-sm text-neutral-100">{item.nombre}</p>
+                      <p className="text-xs text-amber-500 font-medium">${(item.precioCalculado || item.precio).toFixed(2)}</p>
+                    </div>
+                    <button 
+                      onClick={() => setCarrito(carrito.filter(i => i.cartId !== item.cartId))}
+                      className="text-red-400 hover:text-red-300 text-xs bg-red-950/40 border border-red-800/50 px-2.5 py-1 rounded-xl cursor-pointer"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+
+                  {/* Detalle de personalizaciones seleccionadas */}
+                  <div className="text-[11px] text-neutral-400 space-y-0.5 mt-1 border-t border-neutral-800/60 pt-1">
+                    {Object.entries(item.opcionesDetalle || {}).map(([grupo, seleccion]) => {
+                      if (!seleccion) return null;
+                      if (Array.isArray(seleccion) && seleccion.length > 0) {
+                        return (
+                          <p key={grupo}>
+                            <span className="text-neutral-500">{grupo}:</span> {seleccion.map(s => s.nombre).join(', ')}
+                          </p>
+                        );
+                      }
+                      if (!Array.isArray(seleccion) && seleccion.nombre) {
+                        return (
+                          <p key={grupo}>
+                            <span className="text-neutral-500">{grupo}:</span> {seleccion.nombre}
+                          </p>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Selección de Método de Pago */}
+            <div className="pt-3 border-t border-neutral-800">
+              <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">Método de Pago</h3>
+              <div className="grid grid-cols-3 gap-2 mb-4">
+                
+                {/* 1. ATH Móvil */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoPago('ath')}
+                  className={`p-2.5 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    metodoPago === 'ath'
+                      ? 'bg-amber-500/10 border-amber-500 text-amber-400'
+                      : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
+                  }`}
+                >
+                  <span className="font-bold text-xs">📲 ATH Móvil</span>
+                  <span className="text-[9px] text-neutral-400 mt-1">/haus</span>
+                </button>
+
+                {/* 2. Tarjeta */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoPago('tarjeta')}
+                  className={`p-2.5 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    metodoPago === 'tarjeta'
+                      ? 'bg-amber-500/10 border-amber-500 text-amber-400'
+                      : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
+                  }`}
+                >
+                  <span className="font-bold text-xs">💳 Tarjeta</span>
+                  <span className="text-[9px] text-neutral-400 mt-1">Online / Valor</span>
+                </button>
+
+                {/* 3. Efectivo */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoPago('efectivo')}
+                  className={`p-2.5 rounded-2xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+                    metodoPago === 'efectivo'
+                      ? 'bg-amber-500/10 border-amber-500 text-amber-400'
+                      : 'bg-neutral-800/50 border-neutral-800 text-neutral-400'
+                  }`}
+                >
+                  <span className="font-bold text-xs">💵 Efectivo</span>
+                  <span className="text-[9px] text-neutral-400 mt-1">Al recoger</span>
+                </button>
+
+              </div>
+
+              {/* Formulario que solo aparece al seleccionar Tarjeta */}
+              {metodoPago === 'tarjeta' && (
+                <div className="bg-neutral-950 p-3.5 rounded-2xl border border-neutral-800 mb-4 space-y-3">
+                  <div>
+                    <label className="text-[10px] uppercase text-neutral-400 block mb-1">Nombre en la tarjeta</label>
+                    <input 
+                      type="text" 
+                      name="cardHolder"
+                      value={datosTarjeta.cardHolder}
+                      onChange={handleInputChangeTarjeta}
+                      placeholder="Nombre completo"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] uppercase text-neutral-400 block mb-1">Número de tarjeta</label>
+                    <input 
+                      type="text" 
+                      name="cardNumber"
+                      maxLength="16"
+                      value={datosTarjeta.cardNumber}
+                      onChange={handleInputChangeTarjeta}
+                      placeholder="4000 0000 0000 0000"
+                      className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-amber-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] uppercase text-neutral-400 block mb-1">Expiración (MMYY)</label>
+                      <input 
+                        type="text" 
+                        name="expiry"
+                        maxLength="4"
+                        value={datosTarjeta.expiry}
+                        onChange={handleInputChangeTarjeta}
+                        placeholder="1226"
+                        className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase text-neutral-400 block mb-1">CVV</label>
+                      <input 
+                        type="password" 
+                        name="cvv"
+                        maxLength="4"
+                        value={datosTarjeta.cvv}
+                        onChange={handleInputChangeTarjeta}
+                        placeholder="123"
+                        className="w-full bg-neutral-900 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-amber-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Pie con Total e Impuestos Desglosados */}
+            <div className="pt-3 border-t border-neutral-800">
+              <div className="space-y-1.5 text-xs text-neutral-400 mb-4">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span className="text-neutral-200 font-medium">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Impuesto Estatal (6%):</span>
+                  <span className="text-neutral-200 font-medium">${impuestoEstatal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Impuesto Municipal (1%):</span>
+                  <span className="text-neutral-200 font-medium">${impuestoMunicipal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm font-bold text-neutral-100 pt-2 border-t border-neutral-800/80">
+                  <span>Total Final:</span>
+                  <span className="text-amber-500 text-base">${totalPrecio}</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={procesarPedido}
+                disabled={procesandoPago}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold py-3.5 rounded-2xl shadow-xl transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {procesandoPago ? 'Procesando Pago...' : 'Confirmar y Enviar'}
+              </button>
+            </div>
+
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const rootElement = document.getElementById('root');
+const root = ReactDOM.createRoot(rootElement);
 root.render(<MenuApp />);
   </script>
 </body>
